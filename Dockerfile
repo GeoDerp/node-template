@@ -54,5 +54,5 @@ RUN source ~/.bashrc && npm install -g @angular/cli
 # WORKDIR /app
 
 ## Expose port and run app
-# EXPOSE 8080
+# EXPOSE 80
 # CMD [ "httpd", "-DFOREGROUND" ]
