@@ -28,7 +28,7 @@ RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 
 #Install angular 
 RUN source ~/.bashrc && npm install -g @angular/cli 
-#RUN source ~/.bashrc && install .
+# RUN source ~/.bashrc && install .
 
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -39,7 +39,7 @@ RUN source ~/.bashrc && npm install -g @angular/cli
 
 ## Install project requirements, build project
 # RUN dnf install httpd -y; rm -rf /var/cache
-# RUN ng build
+# RUN source ~/.bashrc && ng build
 # RUN cp -r ./dist/*/browser/* /var/www/html/
 
 # RUN <<EOF cat >> /var/www/.htaccess
