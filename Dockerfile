@@ -33,13 +33,26 @@ RUN source ~/.bashrc && npm install -g @angular/cli
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------
 ## Make App folder, copy project into container
+# RUN mkdir -p /app
 # WORKDIR /app
 # COPY . .
 
 ## Install project requirements, build project
-# RUN npm install lite-server --save-dev
-# RUN npm build --prod
+# RUN dnf install httpd -y; rm -rf /var/cache
+# RUN ng build
+# RUN cp -r ./dist/*/browser/* /var/www/html/
+
+# RUN <<EOF cat >> /var/www/.htaccess
+# RewriteEngine On
+# # If an existing asset or directory is requested go to it as it is
+# RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+# RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+# RewriteRule ^ - [L]
+# # If the requested resource doesn't exist, use index.html
+# RewriteRule ^ /index.html
+# EOF
+# WORKDIR /app
 
 ## Expose port and run app
 # EXPOSE 8080
-# CMD [ "lite-server --baseDir='dist/*/'"  ]
+# CMD [ "httpd", "-DFOREGROUND" ]
