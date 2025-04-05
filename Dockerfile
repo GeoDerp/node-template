@@ -1,58 +1,51 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
-RUN dnf update -y; \
-# Install git & nano 
-dnf install git nano -y; \
+
+ENV container=oci
+ENV USER=default
+
+USER root
+
+COPY .nvmrc .nvmrc
+
+# Check for package update
+RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
+# enable nodejs verson
+# dnf module -y enable nodejs:$(cat .nvmrc | cut -c2-3) && \
+# Install git, nano, nodejs and npm 
+dnf install git nano nodejs npm -y; \
 # clear cache
-rm -rf /var/cache
+dnf clean all
 
-# Install nvm
-WORKDIR /root
-ADD https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh /root/
-RUN chmod +x /root/install.sh && /root/install.sh
-RUN export NVM_DIR="$HOME/.nvm"; \
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \ 
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"; \
-nvm install --latest-npm lts/*
+# Dev target
+FROM base AS dev
+COPY .devcontainer/devtools.sh /tmp/devtools.sh
+RUN  /tmp/devtools.sh
+USER default
 
-# Install Trivy 
-RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
-[trivy]
-name=Trivy repository
-baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF
-RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
-
-#Install angular 
-RUN source ~/.bashrc && npm install -g @angular/cli 
-# RUN source ~/.bashrc && install .
-
-# OPTIONAL DEPLOYMENT EXAMPLE:
+# DEPLOYMENT EXAMPLE:
 #-----------------------------
+
+# Prod target
+FROM base
+
 ## Make App folder, copy project into container
-# RUN mkdir -p /app
-# WORKDIR /app
-# COPY . .
+WORKDIR /app
+## REPLACE: replace this COPY statement with project specific files/folders
+COPY . . 
 
 ## Install project requirements, build project
-# RUN dnf install httpd -y; rm -rf /var/cache
-# RUN source ~/.bashrc && ng build
-# RUN cp -r ./dist/*/browser/* /var/www/html/
+RUN npm install lite-server --save-dev; \
+npm build --prod
 
-# RUN <<EOF cat >> /var/www/.htaccess
-# RewriteEngine On
-# # If an existing asset or directory is requested go to it as it is
-# RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
-# RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
-# RewriteRule ^ - [L]
-# # If the requested resource doesn't exist, use index.html
-# RewriteRule ^ /index.html
-# EOF
-# WORKDIR /app
+## clarify permissions
+RUN chown -R default:0 /app && \
+    chmod -R g=u /app
 
 ## Expose port and run app
-# EXPOSE 80
-# CMD [ "httpd", "-DFOREGROUND" ]
+EXPOSE 8080
+USER default
+CMD [ "lite-server --baseDir='dist/*/'"  ]
+
+# EXPOSE 3000
+#CMD ["/usr/local/nvm/nvm.sh;", "nvm install;", "npm", "install", "--global", "serve;", 'serve']

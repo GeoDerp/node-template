@@ -3,7 +3,8 @@
 	"name": "nodejs-devcontainer",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "../"
+		"context": "../",
+		"target": "dev"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
@@ -17,8 +18,6 @@
 		"--userns=keep-id",
 		"--pid=host"
 	],
-	"remoteUser": "root",
-	"containerUser": "root",
 
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -27,22 +26,33 @@
 		  "extensions": [
 			"dbaeumer.vscode-eslint",
 			"ms-vscode.vscode-typescript-next",
-			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"ms-vscode.vscode-typescript",
+			// optional
 			"firefox-devtools.vscode-firefox-debug",
-			"Angular.ng-template"
+			"Angular.ng-template",
+			"ms-azuretools.vscode-docker",
+			"Semgrep.semgrep",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[typescript]": {
-			  "editor.formatOnSave": true,
-			  "editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			  },
-			  "editor.defaultFormatter": "ms-vscode.vscode-typescript-next"
-			}
+			  "editor.defaultFormatter": "ms-vscode.vscode-typescript-next",
+			},
+			 "editor.tabSize": 4,
+			 "workbench.tree.indent": 14,
+			 "trivy.offlineScan": true
+			 //"files.autoSaveWhenNoErrors": true,
+			 //"files.autoSaveWorkspaceFilesOnly": true
 		  }
 		}
 	  }
-	  
-}
+	}

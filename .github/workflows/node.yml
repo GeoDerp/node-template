@@ -4,8 +4,6 @@ on: [push]
 
 env:
   DOCKER_IMAGE_NAME: ""
-  SONAR_ORGANIZATION: "geoderp"
-  SONAR_PROJECT_KEY: "GeoDerp_node-template"
   NODEJS_APP_SOURCE_DIR: "."
 
 jobs:
@@ -20,16 +18,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  
 
     - name: Run Custom Angular.js action
       uses: ./.github/actions/node
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        sonar_token: ${{ secrets.SONAR_TOKEN }}
-        sonar_args: >
-          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -D sonar.sources=${{ env.NODEJS_APP_SOURCE_DIR }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
