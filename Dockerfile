@@ -18,14 +18,10 @@ dnf install git nano nodejs npm -y; \
 # clear cache
 dnf clean all
 
-WORKDIR ${HOME}
-
 # Create user and set permissions
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
-    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /bin/bash ${USER_NAME} 
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -m -d ${HOME} -s /bin/bash ${USER_NAME} 
 
-
-WORKDIR ${HOME}
 #-----------------------------
 
 # Dev target
@@ -36,6 +32,7 @@ RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh
 # Open dev port
 EXPOSE 8000
 USER ${USER_NAME}
+WORKDIR ${HOME}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
