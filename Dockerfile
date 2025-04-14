@@ -6,6 +6,7 @@ ENV USER_NAME=default
 
 ENV HOME="/home/${USER_NAME}"
 ENV PATH="${HOME}/.local/bin:${PATH}"
+# Production App will be stored in /app
 ENV APP="/app"
 
 USER root
@@ -51,6 +52,7 @@ RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
 
 # Run App as User
 USER ${USER_NAME}
+WORKDIR ${HOME}
 
 ## Install project requirements, build project
 RUN npm install lite-server --save-dev; \
